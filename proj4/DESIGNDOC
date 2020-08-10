@@ -1,0 +1,33 @@
+###PROCDUMP###
+
+For proc dump you start with the original proc dump code, however what we want to do is map the virtual page to the physical page table. To do this we first aquire the virtual address(Line 546). Form there we can utilize the macros built within XV6 to map to the Physical Page table itself(PDX); Following, on line 550 we check to ensure the table is valid by incuring bitwise Operands with P, which is the present bit. We then need to access the physical page itself from within the table. Uitilize PTE_ADDR macro, we can easily retreieve the page. Following the checks, utilizing PTE_W we can check to see if the writable bit within the physical address is set by anding it with the TableEntry address. 
+
+
+###PAGEFAULT###
+
+When a page fault occurs, we used lcr3 function in order to properly re-install the page table so we have only valid page tables. At the end of copyuvm, we called lcr3(V2P(pgdir)) to update valid mappings for when a process tries to write and receives a page fault.
+
+
+
+###TestCow###
+The test cow function outputs the original page mapings prior to setting new values in different pages. 
+Once we copy 1 into spaces, we call procdump again. 
+
+
+###Changes in Functions ###
+
+Deallocuvm 
+	-Decremented page counter when page table wasnt valid
+CowCopyUvm
+	-Increated page counter on valid page 
+Check Shared val
+	-Returns 1 at index to check if value is invalid
+Fork
+	-Changed fork to call CowCopyUVM
+Trap.c
+	We call page fault to see if we return 1, if we do, we break 
+cowinit
+	We initialize the sharedpage's values with 0
+SwitchUVM
+	We call Lcr3 witch takes a virtual page number, tranlates to physical then switches the process's address 
+	

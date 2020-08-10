@@ -1,0 +1,5 @@
+Workload Description For Your Test Programs
+- The first test case was used to create a lot of small processes by looping through print statements
+- The second test case creates a very large process that requires the process to move through the queues multiple times and get set to runnable multiple times
+- The third test case loops through calling sleep many times at different values in order to mix up when processes sleep
+- These are all found within “usertests” of the xv6 commands

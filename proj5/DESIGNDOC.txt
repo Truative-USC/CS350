@@ -1,0 +1,8 @@
+Project 5 Changes:
+• Added to bmap() in fs.c to take double-indirect block
+	o Steps through and checks the first double-indirect block not allocated
+		- Using balloc
+	o Reads and locks the first block
+	o Repeats for the second block
+• Changed the NDIRECT and MAXFILE to accommodate for the double-indirect block
+	o Datablock addresses to NDIRECT+2 in addrs for inode and dinode

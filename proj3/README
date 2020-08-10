@@ -1,0 +1,83 @@
+
+To run getpinfo() system call:
+- We created a “test1” command in the list of xv6 commands that can call getpinfo() systemcall.
+	- You do this by typing “test1 <pid>”
+
+type "ls"
+type "test1 1"
+
+_____________________________________________
+
+Addition Design Doc Text:
+
+MFQ Policies and Priority Boost Mechanism
+- Created 3 priority queues of size NPROC (q0, q1, q2)
+- Set the max number of clicks for each priority queue
+	- Q0 = 1 | Q2 = 2 | Q3 = 8
+- Changed allocproc in proc.c to add any new processes to the first priority queue (q0) and set proper values to be eventually scheduled
+- Adjusted the loop in scheduler so that it now loops through all three priority queues instead of just one
+	- When a process is added to a priority queue, it runs through to see if that process isn’t set to state RUNNABLE. If it isn’t, change the process to running in that priority queue and increment the number of clicks for that process.
+	- If the max clicks is reached by the process, we move the process into the next priority queue. And the process repeats. Processes move down priority queues like a waterfall
+- In addition to the MFQ policies to properly move processes down priorities when the maximum clicks is reached, processes existing in the queues must be moved up due to the running process being moved to the next queue
+
+- We created a “test1” command in the list of xv6 commands that can call getpinfo() systemcall.
+	- You do this by typing “test1 <pid>”
+
+Workload Description For Your Test Programs
+- The first test case was used to create a lot of small processes by looping through print statements
+- The second test case creates a very large process that requires the process to move through the queues multiple times and get set to runnable multiple times
+- The third test case loops through calling sleep many times at different values in order to mix up when processes sleep
+- These are all found within “usertests” of the xv6 commands
+
+___________________________________________________
+XV6 STUFF BELOW
+
+
+xv6 is a re-implementation of Dennis Ritchie's and Ken Thompson's Unix
+Version 6 (v6).  xv6 loosely follows the structure and style of v6,
+but is implemented for a modern x86-based multiprocessor using ANSI C.
+
+ACKNOWLEDGMENTS
+
+xv6 is inspired by John Lions's Commentary on UNIX 6th Edition (Peer
+to Peer Communications; ISBN: 1-57398-013-7; 1st edition (June 14,
+2000)). See also https://pdos.csail.mit.edu/6.828/, which
+provides pointers to on-line resources for v6.
+
+xv6 borrows code from the following sources:
+    JOS (asm.h, elf.h, mmu.h, bootasm.S, ide.c, console.c, and others)
+    Plan 9 (entryother.S, mp.h, mp.c, lapic.c)
+    FreeBSD (ioapic.c)
+    NetBSD (console.c)
+
+The following people have made contributions: Russ Cox (context switching,
+locking), Cliff Frey (MP), Xiao Yu (MP), Nickolai Zeldovich, and Austin
+Clements.
+
+We are also grateful for the bug reports and patches contributed by Silas
+Boyd-Wickizer, Anton Burtsev, Cody Cutler, Mike CAT, Tej Chajed, eyalz800,
+Nelson Elhage, Saar Ettinger, Alice Ferrazzi, Nathaniel Filardo, Peter
+Froehlich, Yakir Goaron,Shivam Handa, Bryan Henry, Jim Huang, Alexander
+Kapshuk, Anders Kaseorg, kehao95, Wolfgang Keller, Eddie Kohler, Austin
+Liew, Imbar Marinescu, Yandong Mao, Matan Shabtay, Hitoshi Mitake, Carmi
+Merimovich, Mark Morrissey, mtasm, Joel Nider, Greg Price, Ayan Shafqat,
+Eldar Sehayek, Yongming Shen, Cam Tenny, tyfkda, Rafael Ubal, Warren
+Toomey, Stephen Tu, Pablo Ventura, Xi Wang, Keiichi Watanabe, Nicolas
+Wolovick, wxdao, Grant Wu, Jindong Zhang, Icenowy Zheng, and Zou Chang Wei.
+
+The code in the files that constitute xv6 is
+Copyright 2006-2018 Frans Kaashoek, Robert Morris, and Russ Cox.
+
+ERROR REPORTS
+
+We switched our focus to xv6 on RISC-V; see the mit-pdos/xv6-riscv.git
+repository on github.com.
+
+BUILDING AND RUNNING XV6
+
+To build xv6 on an x86 ELF machine (like Linux or FreeBSD), run
+"make". On non-x86 or non-ELF machines (like OS X, even on x86), you
+will need to install a cross-compiler gcc suite capable of producing
+x86 ELF binaries (see https://pdos.csail.mit.edu/6.828/).
+Then run "make TOOLPREFIX=i386-jos-elf-". Now install the QEMU PC
+simulator and run "make qemu".

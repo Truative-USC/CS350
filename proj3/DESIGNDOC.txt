@@ -1,0 +1,18 @@
+MFQ Policies and Priority Boost Mechanism
+- Created 3 priority queues of size NPROC (q0, q1, q2)
+- Set the max number of clicks for each priority queue
+	- Q0 = 1 | Q2 = 2 | Q3 = 8
+- Changed allocproc in proc.c to add any new processes to the first priority queue (q0) and set proper values to be eventually scheduled
+- Adjusted the loop in scheduler so that it now loops through all three priority queues instead of just one
+	- When a process is added to a priority queue, it runs through to see if that process isn’t set to state RUNNABLE. If it isn’t, change the process to running in that priority queue and increment the number of clicks for that process.
+	- If the max clicks is reached by the process, we move the process into the next priority queue. And the process repeats. Processes move down priority queues like a waterfall
+- In addition to the MFQ policies to properly move processes down priorities when the maximum clicks is reached, processes existing in the queues must be moved up due to the running process being moved to the next queue
+
+- We created a “test1” command in the list of xv6 commands that can call getpinfo() systemcall.
+	- You do this by typing “test1 <pid>”
+
+Workload Description For Your Test Programs
+- The first test case was used to create a lot of small processes by looping through print statements
+- The second test case creates a very large process that requires the process to move through the queues multiple times and get set to runnable multiple times
+- The third test case loops through calling sleep many times at different values in order to mix up when processes sleep
+- These are all found within “usertests” of the xv6 commands
